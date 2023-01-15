@@ -1,29 +1,61 @@
 const User = require("../modules/userModule");
+const bcrypt = require("bcrypt");
+var jwt = require("jsonwebtoken");
 
-const getUser = async (req, res) => {
-  var users = await User.find({});
-  res.send(users);
+const signup = async (req, res) => {
+  if (!req.body.username || !req.body.password) {
+    res.send({ message: "Please send the needed data " });
+  } else {
+    let user = await User.findOne({ username: req.body.username });
+    if (user) {
+      res.send({ message: "User already exist " });
+    } else {
+      bcrypt.hash(req.body.password, 10, async (err, hash) => {
+        if (hash) {
+          let newUser = new User({
+            username: req.body.username,
+            password: hash,
+          });
+          await newUser.save();
+          res.send({ message: true });
+        } else {
+          console.log(err);
+          res.send({ message: false });
+        }
+      });
+    }
+  }
 };
 
-const addUser = (req, res) => {
-  var newUser = new User(req.body);
-  newUser.save();
-  res.send({ message: "inserted " });
+const login = async (req, res) => {
+  let user = await User.findOne({ username: req.body.username });
+  if (user) {
+    bcrypt.compare(req.body.password, user.password, function (err, result) {
+      if (result) {
+        let token = jwt.sign({ id: user._id }, "secret");
+        res.send({ token });
+      } else {
+        res.send({ message: "Wrong password " });
+      }
+    });
+  } else {
+    res.send({ message: "Wrong username" });
+  }
 };
 
-const updateUser = async (req, res) => {
-  await User.updateOne({ _id: req.params.id }, req.body);
-  res.send({ message: "user updated" });
-};
-
-const deleteUser = async (req, res) => {
-  await User.deleteOne({ _id: req.params.id });
-  res.send({ message: "user deleted" });
+const verify = async (req, res) => {
+  jwt.verify(req.body.token, "secret", async (err, payload) => {
+    if (payload) {
+      let user = await User.findOne({ _id: payload.id });
+      res.send(user);
+    } else {
+      res.send({ message: "Session expired" });
+    }
+  });
 };
 
 module.exports = {
-  getUser,
-  addUser,
-  updateUser,
-  deleteUser,
+  signup,
+  login,
+  verify,
 };
