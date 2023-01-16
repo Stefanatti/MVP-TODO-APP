@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./MvpApp.css";
 import SignUp from "./SignUp";
 import Login from "./Login";
-import Profile from "./Profile";
+//import Profile from "./Profile";
+import ToDoApp from "./ToDoApp";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function MvpApp() {
@@ -13,7 +14,7 @@ function MvpApp() {
           <Routes>
             <Route path="/" element={<SignUp />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile" element={<ToDoApp />} />
           </Routes>
         </div>
       </Router>

@@ -1,12 +1,12 @@
 const Todos = require("../modules/todoModule");
 
 const getTodo = async (req, res) => {
-  var todos = await Todos.find({});
+  var todos = await Todos.find({}).populate("owner");
   res.send(todos);
 };
 
 const addTodo = (req, res) => {
-  var newtodo = new Todos({ todo: req.body.todo });
+  var newtodo = new Todos(req.body);
   newtodo.save();
   res.send({ message: "inserted " });
 };
@@ -21,9 +21,17 @@ const deleteTodo = async (req, res) => {
   res.send({ message: "todo deleted" });
 };
 
+const completeTodo = async (req, res) => {
+  const todo = await Todos.findOne({ _id: req.params.id });
+  todo.complete = !todo.complete;
+  todo.save();
+  res.send(todo);
+};
+
 module.exports = {
   getTodo,
   addTodo,
   updateTodo,
   deleteTodo,
+  completeTodo,
 };

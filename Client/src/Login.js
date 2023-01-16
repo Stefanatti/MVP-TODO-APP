@@ -12,7 +12,7 @@ const Login = () => {
   const login = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:3636/login", {
+      .post("http://localhost:3636/user/login", {
         username,
         password,
       })
@@ -58,13 +58,8 @@ const Login = () => {
             <label for="floatingPassword">Password</label>
           </div>
 
-          <div class="checkbox mb-3">
-            <label>
-              <input type="checkbox" value="remember-me" /> Remember me
-            </label>
-          </div>
           <button
-            class="w-100 btn btn-lg btn-primary"
+            class="w-100 btn btn-lg btn-success"
             type="submit"
             onClick={(e) => {
               login(e);

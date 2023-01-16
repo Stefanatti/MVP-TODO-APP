@@ -12,13 +12,13 @@ const SignUp = () => {
   const signUp = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:3636/signup", {
+      .post("http://localhost:3636/user/signup", {
         username,
         password,
       })
       .then(({ data }) => {
         console.log(data);
-        if (data.message === true) {
+        if (data.message === "User already exist ") {
           navigate("/login");
         } else {
           alert(data.message);
@@ -30,7 +30,7 @@ const SignUp = () => {
     <Container id="main-container">
       <main class="form-signin w-100 m-auto">
         <form>
-          <h1 class="h3 mb-3 fw-normal">Please sign up</h1>
+          <h1 className="h3 mb-3 fw-normal ">Please Sign Up</h1>
 
           <div class="form-floating">
             <input
@@ -56,14 +56,18 @@ const SignUp = () => {
             />
             <label for="floatingPassword">Password</label>
           </div>
-
-          <div class="checkbox mb-3">
-            <label>
-              <input type="checkbox" value="remember-me" /> Remember me
-            </label>
-          </div>
+          <p>
+            If you already have account{"  "}
+            <span
+              onClick={() => {
+                navigate("/login");
+              }}
+            >
+              Login
+            </span>
+          </p>
           <button
-            class="w-100 btn btn-lg btn-primary"
+            class="w-100 btn btn-lg btn-success"
             type="submit"
             onClick={(e) => {
               signUp(e);
