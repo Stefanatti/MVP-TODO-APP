@@ -1,13 +1,18 @@
 const Todos = require("../modules/todoModule");
 
 const getTodo = async (req, res) => {
-  var todos = await Todos.find({}).populate("owner");
-  res.send(todos);
+  try {
+    let todos = await Todos.find({ owner: req.params.id }).populate("owner");
+    res.send(todos);
+  } catch (err) {
+    console.log(err);
+    res.send("Something went wrong");
+  }
 };
 
 const addTodo = (req, res) => {
-  var newtodo = new Todos(req.body);
-  newtodo.save();
+  let newTodo = new Todos(req.body);
+  newTodo.save();
   res.send({ message: "inserted " });
 };
 

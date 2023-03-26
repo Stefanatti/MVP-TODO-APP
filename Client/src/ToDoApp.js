@@ -5,21 +5,17 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./TodoApp.css";
 import AddTodoForm from "./ToDoApp-Components/AddTodoForm";
 import UpdateTodo from "./ToDoApp-Components/UpdateTodo";
-//import ToDo from "./ToDoApp-Components/ToDo";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCircleCheck,
-  faPenFancy,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import ToDo from "./ToDoApp-Components/ToDo";
+import PopUp from "./ToDoApp-Components/PopUp";
 
 const ToDoApp = () => {
   const [user, setUser] = useState("");
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState("");
   const [updateForm, setUpdateForm] = useState(false);
-
+  const [updateId, setUpdateId] = useState(null);
   const [updateData, setUpdateData] = useState("");
+  const [openPopUp, setOpenPopUp] = useState(false);
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -28,27 +24,44 @@ const ToDoApp = () => {
           token: localStorage.getItem("token"),
         })
         .then(({ data }) => {
+          console.log(data);
           setUser(data);
-        });
+        })
+        .catch((err) => console.log(err));
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
+    if (!user._id) {
+      return;
+    }
+    getTodos();
+  }, [user._id]);
+
+  const getTodos = () => {
     axios
-      .get("http://localhost:3636/todo/")
+      .get("http://localhost:3636/todo/" + user._id)
       .then(({ data }) => {
+        console.log(data);
         setTodos(data);
       })
       .catch((err) => console.error("Error:", err));
-  }, [todos]);
+  };
 
-  const addTodo = (e) => {
+  const addTodo = async (e) => {
     e.preventDefault();
     if (newTodo) {
-      axios.post("http://localhost:3636/todo/", {
-        todo: newTodo,
-        owner: user._id,
-      });
+      await axios
+        .post("http://localhost:3636/todo/", {
+          todo: newTodo,
+          owner: user._id,
+        })
+        .then((res) => {
+          getTodos();
+          return res;
+        })
+        .catch((err) => console.error("Error:", err));
+
       setNewTodo("");
     } else {
       alert("Please write something you are planing to do.");
@@ -59,19 +72,25 @@ const ToDoApp = () => {
     const data = await fetch("http://localhost:3636/todo/" + id, {
       method: "DELETE",
     })
-      .then((res) => res.json())
+      .then((res) => {
+        getTodos();
+        return res;
+      })
       .catch((err) => console.error("Error:", err));
-
     setTodos((todos) => todos.filter((todo) => todo._id !== data._id));
   };
 
   const updateTodo = async (id) => {
-    axios
+    await axios
       .put("http://localhost:3636/todo/" + id, {
-        todo: newTodo,
+        todo: updateData,
+      })
+      .then((res) => {
+        getTodos();
+        return res;
       })
       .catch((err) => console.error("Error:", err));
-    setNewTodo("");
+    setUpdateForm(false);
   };
 
   const markTodo = async (id) => {
@@ -96,80 +115,61 @@ const ToDoApp = () => {
   };
 
   return (
-    <div className="container-div">
-      <div className="todos-container">
-        <h1>What wll you do today {user.username}?</h1>
+    <div className="app-container">
+      <div className="container-div">
+        <div className="todos-container">
+          <h1>
+            What wll you do today{" "}
+            <a
+              className="username"
+              onClick={() => {
+                setOpenPopUp(true);
+              }}
+            >
+              {user.username}{" "}
+            </a>
+            ?
+          </h1>
 
-        <AddTodoForm
-          addTodo={addTodo}
-          todos={todos}
-          newTodo={newTodo}
-          setNewTodo={setNewTodo}
-        />
-
-        {updateForm ? (
-          //UPDATE FORM
-          <UpdateTodo
-            updateTodo={updateTodo}
-            cancelUpdate={cancelUpdate}
-            updateData={updateData}
+          <AddTodoForm
+            addTodo={addTodo}
+            todos={todos}
+            newTodo={newTodo}
+            setNewTodo={setNewTodo}
           />
-        ) : (
-          <>
-            <>
-              {todos &&
-                todos.map((todo, index) => {
-                  return (
-                    // TODO
+          {updateForm && (
+            <UpdateTodo
+              todos={todos}
+              updateId={updateId}
+              updateTodo={updateTodo}
+              cancelUpdate={cancelUpdate}
+              updateData={updateData}
+              setUpdateData={setUpdateData}
+            />
+          )}
 
-                    <div>
-                      <div className="col todo-item">
-                        <div key={todo._id} className="todo-Num-title">
-                          <div className={todo.complete ? "complete" : ""}>
-                            <span className="todoNum">{index + 1}</span>
-                            <span className="todoTitle">{todo.todo}</span>
-                          </div>
-                        </div>
-                        <div className="col-auto todo-btns ">
-                          <button
-                            className=" todoBtn"
-                            onClick={() => {
-                              markTodo(todo._id);
-                            }}
-                          >
-                            <span>
-                              <FontAwesomeIcon icon={faCircleCheck} />
-                            </span>
-                          </button>
-                          <button
-                            className=" todoBtn"
-                            onClick={() => {
-                              deleteTodo(todo._id);
-                            }}
-                          >
-                            <span>
-                              <FontAwesomeIcon icon={faTrash} />
-                            </span>
-                          </button>
-                          <button
-                            className=" todoBtn"
-                            onClick={() => {
-                              updateTodo(todo._id);
-                              //setUpdateForm(true);
-                            }}
-                          >
-                            <span>
-                              <FontAwesomeIcon icon={faPenFancy} />
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-            </>
-          </>
-        )}
+          {todos &&
+            todos.map((todo, index) => {
+              return (
+                <ToDo
+                  key={todo._id}
+                  todo={todo}
+                  index={index}
+                  deleteTodo={deleteTodo}
+                  setUpdateId={setUpdateId}
+                  setUpdateForm={setUpdateForm}
+                  setUpdateData={setUpdateData}
+                  markTodo={markTodo}
+                />
+              );
+            })}
+        </div>
+        <PopUp
+          open={openPopUp}
+          onClose={() => {
+            setOpenPopUp(false);
+          }}
+        />
       </div>
     </div>
   );

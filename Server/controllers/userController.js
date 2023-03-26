@@ -32,7 +32,7 @@ const login = async (req, res) => {
   if (user) {
     bcrypt.compare(req.body.password, user.password, function (err, result) {
       if (result) {
-        let token = jwt.sign({ id: user._id }, "secret");
+        let token = jwt.sign({ id: user._id }, process.env.TOKEN_KEY);
         res.send({ token });
       } else {
         res.send({ message: "Wrong password " });
@@ -44,7 +44,7 @@ const login = async (req, res) => {
 };
 
 const verify = async (req, res) => {
-  jwt.verify(req.body.token, "secret", async (err, payload) => {
+  jwt.verify(req.body.token, process.env.TOKEN_KEY, async (err, payload) => {
     if (payload) {
       let user = await User.findOne({ _id: payload.id });
       res.send(user);

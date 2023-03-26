@@ -5,31 +5,31 @@ import {
   faPenFancy,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
-import UpdateTodo from "./UpdateTodo";
 
 const ToDo = ({
   todo,
   index,
   markTodo,
-  removeTodo,
+  deleteTodo,
   setUpdateData,
-  editTodo,
+  setUpdateId,
+  setUpdateForm,
 }) => {
   return (
-    <React.Fragment>
-      <div>
+    <div>
+      <div key={todo._id}>
         <div className="col todo-item">
           <div className="todo-Num-title">
-            <div className={todo.status ? "complete" : ""}>
+            <div className={todo.complete ? "complete" : ""}>
               <span className="todoNum">{index + 1}</span>
-              <span className="todoTitle">{todo.title}</span>
+              <span className="todoTitle">{todo.todo}</span>
             </div>
           </div>
           <div className="col-auto todo-btns ">
             <button
               className=" todoBtn"
-              onClick={(e) => {
-                markTodo(todo.title);
+              onClick={() => {
+                markTodo(todo._id);
               }}
             >
               <span>
@@ -39,7 +39,7 @@ const ToDo = ({
             <button
               className=" todoBtn"
               onClick={() => {
-                removeTodo(todo.title);
+                deleteTodo(todo._id);
               }}
             >
               <span>
@@ -49,11 +49,9 @@ const ToDo = ({
             <button
               className=" todoBtn"
               onClick={() => {
-                setUpdateData({
-                  id: todo.id,
-                  title: todo.title,
-                  status: todo.status ? true : false,
-                });
+                setUpdateId(todo._id);
+                setUpdateData(todo.todo);
+                setUpdateForm(true);
               }}
             >
               <span>
@@ -63,7 +61,7 @@ const ToDo = ({
           </div>
         </div>
       </div>
-    </React.Fragment>
+    </div>
   );
 };
 

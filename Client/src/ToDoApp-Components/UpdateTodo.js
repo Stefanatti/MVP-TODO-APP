@@ -1,4 +1,13 @@
-const UpdateTodo = ({ updateData, updateTodo, cancelUpdate }) => {
+const UpdateTodo = ({
+  todos,
+  updateId,
+  updateData,
+  setUpdateData,
+  updateTodo,
+  cancelUpdate,
+}) => {
+  console.log(updateId);
+
   return (
     <div>
       <div className="row">
@@ -8,13 +17,13 @@ const UpdateTodo = ({ updateData, updateTodo, cancelUpdate }) => {
             type="text"
             value={updateData}
             onChange={(e) => {
-              e.target.value;
+              setUpdateData(e.target.value);
             }}
           />
           <button
             className="updateBtn btn btn-warning"
             onClick={() => {
-              updateTodo();
+              updateTodo(updateId);
             }}
           >
             Update

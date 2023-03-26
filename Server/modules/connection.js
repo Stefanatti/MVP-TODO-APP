@@ -1,11 +1,20 @@
 const mongoose = require("mongoose");
+require("dotenv").config({ path: ".env" });
 
-main().catch((err) => console.log(err));
+const uri = process.env.MONGO_URI;
+mongoose.set("strictQuery", false);
 
 async function main() {
-  await mongoose.connect(
-    "mongodb+srv://stefanatti-13:Ananas@cluster0.sghhmsy.mongodb.net/?retryWrites=true&w=majority"
-  );
+  await mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 }
+
+main()
+  .then(() => {
+    console.log("Successfully connected to database");
+  })
+  .catch((err) => console.log(err));
 
 module.exports = mongoose;
