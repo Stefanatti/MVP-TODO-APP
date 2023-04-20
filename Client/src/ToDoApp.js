@@ -8,21 +8,21 @@ import UpdateTodo from "./ToDoApp-Components/UpdateTodo";
 import ToDo from "./ToDoApp-Components/ToDo";
 import PopUp from "./ToDoApp-Components/PopUp";
 
-const todosReducer = (state, action) => {
-  switch (action.type) {
-    case "POPULATE_TODOS":
-      return action.todos;
-    case "ADD_TODO":
-      return [...state, { newTodo: action.newTodo }];
-    default:
-      return state;
-  }
-};
+// const todosReducer = (state, action) => {
+//   switch (action.type) {
+//     case "POPULATE_TODOS":
+//       return action.todos;
+//     case "ADD_TODO":
+//       return [...state, { newTodo: action.newTodo }];
+//     default:
+//       return state;
+//   }
+// };
 
 const ToDoApp = () => {
   const [user, setUser] = useState("");
-  //const [todos, setTodos] = useState([]);
-  const [todos, dispatch] = useReducer(todosReducer, []);
+  const [todos, setTodos] = useState([]);
+  //const [todos, dispatch] = useReducer(todosReducer, []);
   const [newTodo, setNewTodo] = useState("");
   const [updateForm, setUpdateForm] = useState(false);
   const [updateId, setUpdateId] = useState(null);
@@ -55,8 +55,8 @@ const ToDoApp = () => {
       .get("http://localhost:3636/todo/" + user._id)
       .then(({ data }) => {
         console.log(data);
-        dispatch({ type: "POPULATE_TODOS", todos: data });
-        //setTodos(data);
+        //dispatch({ type: "POPULATE_TODOS", todos: data });
+        setTodos(data);
       })
       .catch((err) => console.error("Error:", err));
   };
@@ -64,21 +64,16 @@ const ToDoApp = () => {
   const addTodo = async (e) => {
     e.preventDefault();
     if (newTodo) {
-      dispatch({
-        type: "ADD_TODO",
-
-        newTodo: await axios
-          .post("http://localhost:3636/todo/", {
-            todo: newTodo,
-            owner: user._id,
-          })
-
-          .then((res) => {
-            getTodos();
-            return res;
-          })
-          .catch((err) => console.error("Error:", err)),
-      });
+      await axios
+        .post("http://localhost:3636/todo/", {
+          todo: newTodo,
+          owner: user._id,
+        })
+        .then((res) => {
+          getTodos();
+          return res;
+        })
+        .catch((err) => console.error("Error:", err));
       setNewTodo("");
     } else {
       alert("Please write something you are planing to do.");
@@ -94,7 +89,7 @@ const ToDoApp = () => {
         return res;
       })
       .catch((err) => console.error("Error:", err));
-    //setTodos((todos) => todos.filter((todo) => todo._id !== data._id));
+    setTodos((todos) => todos.filter((todo) => todo._id !== data._id));
   };
 
   const updateTodo = async (id) => {
@@ -116,14 +111,14 @@ const ToDoApp = () => {
     })
       .then((res) => res.json())
       .catch((err) => console.error("Error:", err));
-    // setTodos((todos) =>
-    //   todos.map((todo) => {
-    //     if (todo._id === data._id) {
-    //       todo.complete = data.complete;
-    //     }
-    //     return todo;
-    //   })
-    // );
+    setTodos((todos) =>
+      todos.map((todo) => {
+        if (todo._id === data._id) {
+          todo.complete = data.complete;
+        }
+        return todo;
+      })
+    );
   };
 
   const cancelUpdate = () => {
