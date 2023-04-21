@@ -1,6 +1,6 @@
 {
   "name": "my-app",
-  "homepage": "https://whattodo-ds7x.onrender.com",
+  "homepage": ".",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
