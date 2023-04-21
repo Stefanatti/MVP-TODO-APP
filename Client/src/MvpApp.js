@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  HashRouter,
+  Route,
+  Routes,
+} from "react-router-dom";
 import "./MvpApp.css";
 import SignUp from "./SignUp";
 import Login from "./Login";
@@ -9,7 +14,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 function MvpApp() {
   return (
     <div className="App">
-      <Router>
+      <HashRouter>
         <div>
           <Routes>
             <Route path="/" element={<SignUp />} />
@@ -17,7 +22,7 @@ function MvpApp() {
             <Route path="/profile" element={<ToDoApp />} />
           </Routes>
         </div>
-      </Router>
+      </HashRouter>
     </div>
   );
 }
