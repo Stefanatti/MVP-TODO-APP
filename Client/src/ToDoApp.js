@@ -52,7 +52,7 @@ const ToDoApp = () => {
 
   const getTodos = () => {
     axios
-      .get("http://localhost:3636/todo/" + user._id)
+      .get(process.env.REACT_APP_SERVER_URL + "/todo/" + user._id)
       .then(({ data }) => {
         console.log(data);
         //dispatch({ type: "POPULATE_TODOS", todos: data });
@@ -65,7 +65,7 @@ const ToDoApp = () => {
     e.preventDefault();
     if (newTodo) {
       await axios
-        .post("http://localhost:3636/todo/", {
+        .post(process.env.REACT_APP_SERVER_URL + "/todo/", {
           todo: newTodo,
           owner: user._id,
         })
@@ -81,7 +81,7 @@ const ToDoApp = () => {
   };
 
   const deleteTodo = async (id) => {
-    const data = await fetch("http://localhost:3636/todo/" + id, {
+    const data = await fetch(process.env.REACT_APP_SERVER_URL + "/todo/" + id, {
       method: "DELETE",
     })
       .then((res) => {
@@ -94,7 +94,7 @@ const ToDoApp = () => {
 
   const updateTodo = async (id) => {
     await axios
-      .put("http://localhost:3636/todo/" + id, {
+      .put(process.env.REACT_APP_SERVER_URL + "/todo/" + id, {
         todo: updateData,
       })
       .then((res) => {
@@ -106,9 +106,12 @@ const ToDoApp = () => {
   };
 
   const markTodo = async (id) => {
-    const data = await fetch("http://localhost:3636/todo/complete/" + id, {
-      method: "PUT",
-    })
+    const data = await fetch(
+      process.env.REACT_APP_SERVER_URL + "/todo/complete/" + id,
+      {
+        method: "PUT",
+      }
+    )
       .then((res) => res.json())
       .catch((err) => console.error("Error:", err));
     setTodos((todos) =>

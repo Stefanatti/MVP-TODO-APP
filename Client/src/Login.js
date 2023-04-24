@@ -12,7 +12,7 @@ const Login = () => {
   const login = (e) => {
     e.preventDefault();
     axios
-      .post("http://localhost:3636/user/login", {
+      .post(process.env.REACT_APP_SERVER_URL + "/user/login", {
         username,
         password,
       })

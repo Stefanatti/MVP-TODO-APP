@@ -10,7 +10,7 @@ const PopUp = ({ open, onClose }) => {
   useEffect(() => {
     if (localStorage.getItem("token")) {
       axios
-        .post("http://localhost:3636/user/verify", {
+        .post(process.env.REACT_APP_SERVER_URL + "/user/verify", {
           token: localStorage.getItem("token"),
         })
         .then(({ data }) => {
